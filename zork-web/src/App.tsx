@@ -120,7 +120,8 @@ function App() {
       "West of House", "North of House", "South of House", "Behind House",
       "Kitchen", "Living Room", "Attic", "Forest", "Canyon View",
       "Clearing", "Canyon Bottom", "End of Rainbow", "Chimney",
-      "Studio", "Gallery", "Mailbox"
+      "Studio", "Gallery", "Mailbox", "Cellar", "The Troll Room",
+      "Treasure Room", "Maze", "Dam", "Reservoir", "East of Chasm"
     ]
 
     for (const loc of locations) {

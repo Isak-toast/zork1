@@ -5,15 +5,29 @@ interface GameGraphicsProps {
 // Location name to image file mapping
 const locationImages: Record<string, string> = {
   'West of House': '/images/west_of_house.png',
+  'North of House': '/images/north_of_house.png',
+  'South of House': '/images/south_of_house.png',
+  'Behind House': '/images/behind_house.png',
+  'Clearing': '/images/clearing.png',
+  'Canyon View': '/images/canyon_view.png',
   'Forest Path': '/images/forest_path.png',
   'Forest': '/images/forest_path.png', // Reuse for generic forest
-  // Add more as images are created:
-  // 'Living Room': '/images/living_room.png',
-  // 'Cellar': '/images/cellar.png',
-  // 'The Troll Room': '/images/troll_room.png',
-  // 'Treasure Room': '/images/treasure_room.png',
-  // 'Maze': '/images/maze.png',
-  // 'Dam': '/images/dam.png',
+
+  // Interior
+  'Kitchen': '/images/kitchen.png',
+  'Living Room': '/images/living_room.png',
+  'Attic': '/images/attic.png',
+  'Studio': '/images/studio.png',
+  'Gallery': '/images/gallery.png',
+
+  // Underground
+  'Cellar': '/images/cellar.png',
+  'The Troll Room': '/images/troll_room.png',
+  'Treasure Room': '/images/treasure_room.png',
+  'Maze': '/images/maze.png',
+  'Dam': '/images/dam.png',
+  'Reservoir': '/images/reservoir.png',
+  'East of Chasm': '/images/east_of_chasm.png',
 }
 
 export default function GameGraphics({ location }: GameGraphicsProps) {
@@ -63,8 +77,8 @@ export default function GameGraphics({ location }: GameGraphicsProps) {
           background: #000;
         }
         .scene-image {
-          max-width: 100%;
-          max-height: 100%;
+          width: 100%;
+          height: 100%;
           object-fit: contain;
           image-rendering: pixelated;
           image-rendering: -moz-crisp-edges;
