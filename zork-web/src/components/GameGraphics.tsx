@@ -4,10 +4,10 @@ interface GameGraphicsProps {
 
 // Location name to image file mapping
 const locationImages: Record<string, string> = {
+  'West of House': '/images/west_of_house.png',
   'Forest Path': '/images/forest_path.png',
   'Forest': '/images/forest_path.png', // Reuse for generic forest
   // Add more as images are created:
-  // 'West of House': '/images/west_of_house.png',
   // 'Living Room': '/images/living_room.png',
   // 'Cellar': '/images/cellar.png',
   // 'The Troll Room': '/images/troll_room.png',
@@ -60,7 +60,7 @@ export default function GameGraphics({ location }: GameGraphicsProps) {
           display: flex;
           justify-content: center;
           align-items: center;
-          background: #0a0a0a;
+          background: #000;
         }
         .scene-image {
           max-width: 100%;
@@ -72,16 +72,19 @@ export default function GameGraphics({ location }: GameGraphicsProps) {
         }
         .location-label {
           position: absolute;
-          bottom: 10px;
-          left: 10px;
-          background: rgba(0, 0, 0, 0.8);
-          padding: 8px 15px;
-          border: 2px solid #33ff33;
-          color: #33ff33;
-          font-size: 1.5rem;
+          bottom: 12px;
+          left: 12px;
+          background: linear-gradient(135deg, rgba(61, 40, 23, 0.95) 0%, rgba(43, 24, 16, 0.95) 100%);
+          padding: 8px 16px;
+          border: 3px double #5c3d2e;
+          color: #f4e8d0;
+          font-size: 1.6rem;
           font-family: 'VT323', monospace;
-          text-shadow: 0 0 10px #33ff33;
-          box-shadow: 0 0 20px rgba(51, 255, 51, 0.3);
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+          box-shadow: 
+            0 4px 12px rgba(0, 0, 0, 0.9),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          letter-spacing: 1px;
         }
       `}</style>
     </div>

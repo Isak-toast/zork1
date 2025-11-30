@@ -11,6 +11,7 @@ function App() {
   const [output, setOutput] = useState<string[]>([])
   const [location, setLocation] = useState<string>('West of House')
   const [isReady, setIsReady] = useState(false)
+  const [inventory, setInventory] = useState<string[]>([])
 
   const jszmRef = useRef<any>(null)
   const runnerRef = useRef<any>(null)
@@ -28,16 +29,29 @@ function App() {
 
         // Setup IO
         jszm.print = function* (text: string) {
-          // Handle text output
-          // We need to buffer lines or handle partial updates
-          // For simplicity, we'll just append to output
           if (text) {
-            // Clean up text slightly if needed
             setOutput(prev => {
-              const newLines = text.split('\n')
-              // If the last line of prev is not empty and the new text doesn't start with newline,
-              // we might need to merge. But for now, let's just add.
-              return [...prev, ...newLines].filter(line => line !== null)
+              const lines = [...prev]
+              // If text contains newlines, split and add as separate lines
+              if (text.includes('\n')) {
+                const parts = text.split('\n')
+                // Append first part to last line (if exists)
+                if (lines.length > 0) {
+                  lines[lines.length - 1] += parts[0]
+                  // Add remaining parts as new lines
+                  lines.push(...parts.slice(1))
+                } else {
+                  lines.push(...parts)
+                }
+              } else {
+                // No newline - append to last line or create new line
+                if (lines.length > 0) {
+                  lines[lines.length - 1] += text
+                } else {
+                  lines.push(text)
+                }
+              }
+              return lines
             })
             checkForLocation(text)
           }
@@ -45,10 +59,11 @@ function App() {
         }
 
         jszm.read = function* (maxlen: number) {
-          // Wait for input
+          // Wait for input by yielding a promise
           const input: string = yield new Promise<string>(resolve => {
             inputResolverRef.current = resolve
           })
+          // Return the input string (trimmed to maxlen)
           return (input || '').slice(0, maxlen)
         }
 
@@ -84,9 +99,13 @@ function App() {
 
       if (res.value instanceof Promise) {
         // Waiting for input - the promise will be resolved by handleCommand
-        await res.value
-        // After input is resolved, continue to next step
-        advanceGame()
+        const resolvedValue = await res.value
+        // Pass the resolved value back to the generator
+        const nextRes = runnerRef.current.next(resolvedValue)
+        // Continue with the next step
+        if (!nextRes.done) {
+          advanceGame()
+        }
       } else {
         // Just a yield for print or other ops, continue immediately
         advanceGame()
@@ -115,6 +134,7 @@ function App() {
   const handleCommand = (cmd: string) => {
     if (inputResolverRef.current) {
       handleOutput(`> ${cmd}`)
+      handleOutput('')  // Add empty line after input
       const resolve = inputResolverRef.current
       inputResolverRef.current = null
       // Z-machine expects input to end with newline
@@ -125,14 +145,53 @@ function App() {
 
   const handleOutput = (text: string) => {
     setOutput(prev => [...prev, text])
+    // Parse for inventory updates
+    parseInventory(text)
+  }
+
+  const parseInventory = (text: string) => {
+    // Check for "Taken." message
+    if (text.includes('Taken.')) {
+      // Look back in recent output to find what was taken
+      const recentOutput = output.slice(-5).join(' ')
+      const takeMatch = recentOutput.match(/take (\w+)/i)
+      if (takeMatch) {
+        const item = takeMatch[1]
+        setInventory(prev => {
+          if (!prev.includes(item)) {
+            return [...prev, item]
+          }
+          return prev
+        })
+      }
+    }
+    // Parse inventory list output
+    if (text.includes('You are carrying:') || text.includes('carrying')) {
+      // Next lines will be inventory items
+      const lines = output.slice(-20)
+      const items: string[] = []
+      let inInventory = false
+      for (const line of lines) {
+        if (line.includes('carrying')) {
+          inInventory = true
+          continue
+        }
+        if (inInventory && line.trim()) {
+          // Extract item name (usually starts with 'A ' or 'An ')
+          const itemMatch = line.match(/(?:A|An)\s+(\w+)/i)
+          if (itemMatch) {
+            items.push(itemMatch[1].toLowerCase())
+          }
+        }
+      }
+      if (items.length > 0) {
+        setInventory(items)
+      }
+    }
   }
 
   return (
     <div className="app-container">
-      <header className="game-header">
-        <h1>ZORK I: The Great Underground Empire</h1>
-      </header>
-
       <main className="game-layout">
         <div className="graphics-panel">
           <GameGraphics location={location} />
@@ -143,7 +202,7 @@ function App() {
         </div>
 
         <div className="controls-panel">
-          <GameControls onCommand={handleCommand} />
+          <GameControls onCommand={handleCommand} inventory={inventory} />
         </div>
       </main>
     </div>

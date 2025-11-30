@@ -1,48 +1,78 @@
 import { useEffect, useRef, useState } from 'react'
 
 interface GameTerminalProps {
-    output: string[]
-    onCommand: (cmd: string) => void
+  output: string[]
+  onCommand: (cmd: string) => void
 }
 
 export default function GameTerminal({ output, onCommand }: GameTerminalProps) {
-    const [input, setInput] = useState('')
-    const bottomRef = useRef<HTMLDivElement>(null)
+  const [input, setInput] = useState('')
+  const [commandHistory, setCommandHistory] = useState<string[]>([])
+  const [historyIndex, setHistoryIndex] = useState(-1)
+  const bottomRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, [output])
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [output])
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        if (input.trim()) {
-            onCommand(input)
-            setInput('')
-        }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (input.trim()) {
+      onCommand(input)
+      // Add to history (max 5 commands)
+      setCommandHistory(prev => {
+        const newHistory = [input, ...prev.filter(cmd => cmd !== input)].slice(0, 5)
+        return newHistory
+      })
+      setInput('')
+      setHistoryIndex(-1)
     }
+  }
 
-    return (
-        <div className="terminal-content">
-            <div className="output-log">
-                {output.map((line, i) => (
-                    <div key={i} className="log-line">{line}</div>
-                ))}
-                <div ref={bottomRef} />
-            </div>
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      if (commandHistory.length > 0) {
+        const newIndex = Math.min(historyIndex + 1, commandHistory.length - 1)
+        setHistoryIndex(newIndex)
+        setInput(commandHistory[newIndex])
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1
+        setHistoryIndex(newIndex)
+        setInput(commandHistory[newIndex])
+      } else if (historyIndex === 0) {
+        setHistoryIndex(-1)
+        setInput('')
+      }
+    }
+  }
 
-            <form onSubmit={handleSubmit} className="input-line">
-                <span className="prompt">{'>'}</span>
-                <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    autoFocus
-                    placeholder="Type a command..."
-                    className="cmd-input"
-                />
-            </form>
+  return (
+    <div className="terminal-content">
+      <div className="output-log">
+        {output.map((line, i) => (
+          <div key={i} className="log-line">{line}</div>
+        ))}
+        <div ref={bottomRef} />
+      </div>
 
-            <style>{`
+      <form onSubmit={handleSubmit} className="input-line">
+        <span className="prompt">{'>'}</span>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          autoFocus
+          placeholder="Type a command..."
+          className="cmd-input"
+        />
+      </form>
+
+      <style>{`
         .terminal-content {
           display: flex;
           flex-direction: column;
@@ -80,6 +110,6 @@ export default function GameTerminal({ output, onCommand }: GameTerminalProps) {
           outline: none;
         }
       `}</style>
-        </div>
-    )
+    </div>
+  )
 }

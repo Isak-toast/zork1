@@ -1,101 +1,153 @@
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Cinzel:wght@400;600&display=swap');
 
 :root {
-  --bg-color: #1a1a1a;
-  --terminal-bg: #000000;
-  --terminal-text: #33ff33;
-  /* Classic green phosphor */
-  --accent-color: #ffffff;
-  --border-color: #444;
+  --stone-dark: #1a1a1a;
+  --stone-medium: #2a2a2a;
+  --stone-light: #3a3a3a;
+  --metal-dark: #1a1a1a;
+  --metal-light: #4a4a4a;
+  --parchment: #f4e8d0;
+  --terminal-green: #88cc88;
+  --shadow-deep: rgba(0, 0, 0, 0.9);
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-color);
-  color: var(--accent-color);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.4),
+      rgba(0, 0, 0, 0.4)),
+    url('/images/web_background.jpg') center/cover no-repeat fixed;
+  color: var(--parchment);
   font-family: 'VT323', monospace;
   height: 100vh;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  max-width: 1200px;
+  height: 90vh;
+  width: 90vw;
+  max-width: 1600px;
+  max-height: 900px;
   margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.game-header h1 {
-  text-align: center;
-  margin: 0 0 20px 0;
-  font-size: 3rem;
-  text-shadow: 2px 2px 0px #000;
-  letter-spacing: 2px;
+  padding: 0;
+  box-shadow:
+    0 0 80px var(--shadow-deep),
+    inset 0 0 60px rgba(0, 0, 0, 0.8),
+    inset 0 0 2px var(--metal-light);
 }
 
 .game-layout {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  grid-template-rows: 1fr 200px;
-  gap: 20px;
+  grid-template-columns: 1fr 340px;
+  grid-template-rows: 1fr 360px;
+  gap: 16px;
   flex: 1;
   min-height: 0;
-  /* Important for scrolling */
+  padding: 16px;
 }
 
 .graphics-panel {
-  grid-column: 1 / 2;
+  grid-column: 1 / 3;
   grid-row: 1 / 2;
-  background-color: #000;
-  border: 4px solid var(--border-color);
+  background: #000;
+  border: 4px double var(--metal-light);
+  border-radius: 2px;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   position: relative;
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.9),
+    inset 0 0 60px rgba(0, 0, 0, 0.8);
+}
+
+.graphics-panel::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 2px solid rgba(74, 74, 74, 0.3);
+  pointer-events: none;
+  z-index: 10;
 }
 
 .terminal-panel {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
-  background-color: var(--terminal-bg);
-  border: 4px solid var(--border-color);
-  padding: 15px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  border: 4px double var(--metal-light);
+  border-radius: 2px;
+  padding: 20px;
   overflow-y: auto;
-  font-size: 1.2rem;
-  color: var(--terminal-text);
+  font-size: 1.3rem;
+  color: var(--terminal-green);
   display: flex;
   flex-direction: column;
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.9),
+    inset 0 0 80px rgba(0, 0, 0, 0.7);
+  position: relative;
+  text-shadow: 0 0 4px rgba(136, 204, 136, 0.4);
+}
+
+.terminal-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(136, 204, 136, 0.02) 0px,
+      rgba(136, 204, 136, 0.02) 1px,
+      transparent 1px,
+      transparent 3px);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .controls-panel {
   grid-column: 2 / 3;
-  grid-row: 1 / 3;
-  background-color: #2a2a2a;
-  border: 4px solid var(--border-color);
-  padding: 15px;
+  grid-row: 2 / 3;
+  background: linear-gradient(135deg, var(--stone-dark) 0%, var(--stone-medium) 100%);
+  border: 4px double var(--metal-light);
+  border-radius: 2px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.9),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
 }
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 14px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: var(--stone-dark);
+  border: 2px solid var(--stone-medium);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #444;
+  background: linear-gradient(180deg, var(--metal-light) 0%, var(--stone-medium) 100%);
+  border-radius: 2px;
+  border: 2px solid var(--stone-dark);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #666;
+  background: linear-gradient(180deg, #5a5a5a 0%, var(--metal-light) 100%);
 }
