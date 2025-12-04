@@ -16,6 +16,7 @@ function App() {
   const jszmRef = useRef<any>(null)
   const runnerRef = useRef<any>(null)
   const inputResolverRef = useRef<((val: string) => void) | null>(null)
+  const commandQueueRef = useRef<string[]>([])
 
   useEffect(() => {
     const initGame = async () => {
@@ -53,12 +54,23 @@ function App() {
               }
               return lines
             })
+            // Fallback: still check main text for location just in case
             checkForLocation(text)
           }
           yield
         }
 
         jszm.read = function* (maxlen: number) {
+          // Check if we have queued commands (e.g. from dev script)
+          if (commandQueueRef.current.length > 0) {
+            const cmd = commandQueueRef.current.shift()
+            // Small delay to make it look natural
+            yield new Promise(resolve => setTimeout(resolve, 100))
+            handleOutput(`> ${cmd}`)
+            handleOutput('')
+            return (cmd + '\n').slice(0, maxlen)
+          }
+
           // Wait for input by yielding a promise
           const input: string = yield new Promise<string>(resolve => {
             inputResolverRef.current = resolve
@@ -68,7 +80,14 @@ function App() {
         }
 
         jszm.updateStatusLine = function* (text: string, score: number, moves: number) {
-          // We can update a status state here if we want
+          // Update location from status line (more reliable)
+          // Status line usually looks like: "West of House      Score: 0 ..."
+          // We extract the left part
+          if (text) {
+            const loc = text.split(/\s{2,}/)[0].trim()
+            console.log("Status line update:", text, "-> Location:", loc)
+            checkForLocation(loc)
+          }
           yield
         }
 
@@ -126,6 +145,7 @@ function App() {
 
     for (const loc of locations) {
       if (text.includes(loc)) {
+        console.log("Found location match:", loc)
         setLocation(loc)
         break
       }
@@ -141,6 +161,43 @@ function App() {
       // Z-machine expects input to end with newline
       resolve(cmd + '\n')
       // advanceGame will be called automatically after the promise resolves
+    }
+  }
+
+  const runDevScript = (scriptName: string) => {
+    if (scriptName === 'cellar') {
+      const commands = [
+        "n",      // North of House
+        "e",      // Behind House
+        "open window",
+        "enter",  // Kitchen
+        "w",      // Living Room
+        "take lamp",
+        "take sword",
+        "move rug",
+        "open trap door",
+        "turn on lamp",
+        "d"       // Cellar
+      ]
+      commandQueueRef.current.push(...commands)
+
+      // If we are currently waiting for input, trigger the first command immediately
+      if (inputResolverRef.current) {
+        // We need to "wake up" the read loop. 
+        // We can do this by resolving with a dummy value or just re-running advanceGame logic?
+        // Actually, since read loop checks queue first, we just need to trigger it.
+        // But the read loop is currently suspended at 'yield new Promise'.
+        // We can resolve the current promise with the first command.
+
+        const firstCmd = commandQueueRef.current.shift()
+        if (firstCmd) {
+          handleOutput(`> ${firstCmd}`)
+          handleOutput('')
+          const resolve = inputResolverRef.current
+          inputResolverRef.current = null
+          resolve(firstCmd + '\n')
+        }
+      }
     }
   }
 
@@ -203,7 +260,11 @@ function App() {
         </div>
 
         <div className="controls-panel">
-          <GameControls onCommand={handleCommand} inventory={inventory} />
+          <GameControls
+            onCommand={handleCommand}
+            inventory={inventory}
+            onRunDevScript={runDevScript}
+          />
         </div>
       </main>
     </div>

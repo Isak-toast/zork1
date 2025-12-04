@@ -12,6 +12,8 @@ const locationImages: Record<string, string> = {
   'Canyon View': '/images/canyon_view.png',
   'Forest Path': '/images/forest_path.png',
   'Forest': '/images/forest_path.png', // Reuse for generic forest
+  'Stone Barrow': '/images/stone_barrow.png',
+  'Up a Tree': '/images/up_a_tree.png',
 
   // Interior
   'Kitchen': '/images/kitchen.png',
@@ -25,9 +27,41 @@ const locationImages: Record<string, string> = {
   'The Troll Room': '/images/troll_room.png',
   'Treasure Room': '/images/treasure_room.png',
   'Maze': '/images/maze.png',
-  'Dam': '/images/dam.png',
-  'Reservoir': '/images/reservoir.png',
+  'Dead End': '/images/dead_end.png',
+  'Grating Room': '/images/grating_room.png',
   'East of Chasm': '/images/east_of_chasm.png',
+  'Dome Room': '/images/dome_room.png',
+  'Torch Room': '/images/torch_room.png',
+  'Temple': '/images/temple.png',
+  'Altar': '/images/altar.png',
+  'Egyptian Room': '/images/egyptian_room.png',
+  'Cyclops Room': '/images/cyclops_room.png',
+  'Strange Passage': '/images/strange_passage.png',
+  'Round Room': '/images/round_room.png',
+  'Loud Room': '/images/loud_room.png',
+  'Entrance to Hades': '/images/entrance_to_hades.png',
+  'Land of the Dead': '/images/land_of_the_dead.png',
+  'Engravings Cave': '/images/engravings_cave.png',
+
+  // Dam & River
+  'Dam': '/images/dam.png',
+  'Dam Lobby': '/images/dam_lobby.png',
+  'Maintenance Room': '/images/maintenance_room.png',
+  'Dam Base': '/images/dam_base.png',
+  'Reservoir': '/images/reservoir.png',
+  'Reservoir North': '/images/reservoir_north.png',
+  'Reservoir South': '/images/reservoir.png', // Reuse reservoir
+  'Atlantis Room': '/images/atlantis_room.png',
+  'Frigid River': '/images/frigid_river.png',
+  'White Cliffs Beach': '/images/white_cliffs_beach.png',
+  'Sandy Beach': '/images/sandy_beach.png',
+  'Aragain Falls': '/images/aragain_falls.png',
+  'End of Rainbow': '/images/end_of_rainbow.png',
+  'On the Rainbow': '/images/aragain_falls.png', // Reuse falls
+  'Canyon Bottom': '/images/canyon_bottom.png',
+
+  // Mirror
+  'Mirror Room': '/images/mirror_room.png',
 }
 
 export default function GameGraphics({ location }: GameGraphicsProps) {

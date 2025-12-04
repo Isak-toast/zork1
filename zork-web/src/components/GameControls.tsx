@@ -3,9 +3,10 @@ import { useState } from 'react'
 interface GameControlsProps {
   onCommand: (cmd: string) => void
   inventory: string[]
+  onRunDevScript?: (scriptName: string) => void
 }
 
-export default function GameControls({ onCommand, inventory }: GameControlsProps) {
+export default function GameControls({ onCommand, inventory, onRunDevScript }: GameControlsProps) {
   const [showExamineDropdown, setShowExamineDropdown] = useState(false)
 
   const directions = [
@@ -80,6 +81,17 @@ export default function GameControls({ onCommand, inventory }: GameControlsProps
             </div>
           )}
         </div>
+
+        {/* Dev Shortcut Button */}
+        {onRunDevScript && (
+          <button
+            onClick={() => onRunDevScript('cellar')}
+            className="control-btn dev-btn"
+            title="Dev: Go to Cellar with Lamp & Sword"
+          >
+            ⚡ CELLAR
+          </button>
+        )}
       </div>
 
       <style>{`
@@ -142,6 +154,19 @@ export default function GameControls({ onCommand, inventory }: GameControlsProps
         }
         .action-btn {
           font-size: 0.9rem;
+        }
+        .dev-btn {
+          grid-column: span 2;
+          background: linear-gradient(135deg, #4a2a2a 0%, #3a1a1a 100%);
+          border-color: #6a3a3a;
+          color: #ff9999;
+          font-weight: bold;
+          margin-top: 8px;
+        }
+        .dev-btn:hover:not(.disabled) {
+          background: linear-gradient(135deg, #5a3a3a 0%, #4a2a2a 100%);
+          border-color: #7a4a4a;
+          color: #ffcccc;
         }
         .examine-container {
           position: relative;
