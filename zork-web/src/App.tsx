@@ -4,8 +4,11 @@ import './App.css'
 import GameTerminal from './components/GameTerminal'
 import GameGraphics from './components/GameGraphics'
 import GameControls from './components/GameControls'
+import GameSidebar from './components/GameSidebar'
 // @ts-ignore
 import JSZM from './jszm.js'
+
+import { findPath } from './utils/ZorkMap'
 
 function App() {
   const [output, setOutput] = useState<string[]>([])
@@ -165,30 +168,45 @@ function App() {
   }
 
   const runDevScript = (scriptName: string) => {
-    if (scriptName === 'cellar') {
-      const commands = [
-        "n",      // North of House
-        "e",      // Behind House
-        "open window",
-        "enter",  // Kitchen
-        "w",      // Living Room
-        "take lamp",
-        "take sword",
-        "move rug",
-        "open trap door",
-        "turn on lamp",
-        "d"       // Cellar
-      ]
+    let commands: string[] = []
+
+    switch (scriptName) {
+      case 'cellar':
+        commands = [
+          "n", "e", "open window", "enter", "w",
+          "take lamp", "take sword", "move rug",
+          "open trap door", "turn on lamp", "d"
+        ]
+        break
+      case 'start_forest':
+        commands = ["n", "n"]
+        break
+      case 'enter_house':
+        commands = ["n", "e", "open window", "enter", "w"]
+        break
+      case 'get_lantern':
+        commands = ["take lamp", "take sword", "turn on lamp"]
+        break
+      case 'open_trapdoor':
+        commands = ["move rug", "open trap door"]
+        break
+      case 'get_egg':
+        commands = ["n", "n", "up", "take egg", "down"]
+        break
+      case 'dam_route':
+        // Assumes starting from Living Room with sword/lamp
+        commands = [
+          "d", "n", "kill troll with sword", "drop sword",
+          "e", "e", "se", "e"
+        ]
+        break
+    }
+
+    if (commands.length > 0) {
       commandQueueRef.current.push(...commands)
 
-      // If we are currently waiting for input, trigger the first command immediately
+      // Trigger execution if waiting for input
       if (inputResolverRef.current) {
-        // We need to "wake up" the read loop. 
-        // We can do this by resolving with a dummy value or just re-running advanceGame logic?
-        // Actually, since read loop checks queue first, we just need to trigger it.
-        // But the read loop is currently suspended at 'yield new Promise'.
-        // We can resolve the current promise with the first command.
-
         const firstCmd = commandQueueRef.current.shift()
         if (firstCmd) {
           handleOutput(`> ${firstCmd}`)
@@ -198,6 +216,28 @@ function App() {
           resolve(firstCmd + '\n')
         }
       }
+    }
+  }
+
+  const handleNavigate = (target: string) => {
+    const result = findPath(location, target)
+    if (result && result.commands.length > 0) {
+      handleOutput(`> [AUTO-NAV] Moving to ${target}...`)
+      commandQueueRef.current.push(...result.commands)
+
+      // Trigger execution if waiting for input
+      if (inputResolverRef.current) {
+        const firstCmd = commandQueueRef.current.shift()
+        if (firstCmd) {
+          handleOutput(`> ${firstCmd}`)
+          handleOutput('')
+          const resolve = inputResolverRef.current
+          inputResolverRef.current = null
+          resolve(firstCmd + '\n')
+        }
+      }
+    } else {
+      handleOutput(`> [AUTO-NAV] Cannot find path from ${location} to ${target}.`)
     }
   }
 
@@ -264,6 +304,14 @@ function App() {
             onCommand={handleCommand}
             inventory={inventory}
             onRunDevScript={runDevScript}
+          />
+        </div>
+
+        <div className="sidebar-panel">
+          <GameSidebar
+            onRunMacro={runDevScript}
+            currentLocation={location}
+            onNavigate={handleNavigate}
           />
         </div>
       </main>
