@@ -50,15 +50,26 @@ const locationImages: Record<string, string> = {
   'Dam Base': '/images/dam_base.png',
   'Reservoir': '/images/reservoir.png',
   'Reservoir North': '/images/reservoir_north.png',
-  'Reservoir South': '/images/reservoir.png', // Reuse reservoir
+  'Reservoir South': '/images/reservoir_south.png',
   'Atlantis Room': '/images/atlantis_room.png',
+  'Stream View': '/images/stream_view.png',
+  'Stream': '/images/in_stream.png',
   'Frigid River': '/images/frigid_river.png',
-  'White Cliffs Beach': '/images/white_cliffs_beach.png',
+  'White Cliffs Beach': '/images/white_cliffs.png',
   'Sandy Beach': '/images/sandy_beach.png',
+  'Sandy Cave': '/images/sandy_cave.png',
+  'Shore': '/images/shore.png',
   'Aragain Falls': '/images/aragain_falls.png',
   'End of Rainbow': '/images/end_of_rainbow.png',
-  'On the Rainbow': '/images/aragain_falls.png', // Reuse falls
+  'On the Rainbow': '/images/on_rainbow.png',
   'Canyon Bottom': '/images/canyon_bottom.png',
+  'Rocky Ledge': '/images/cliff_middle.png',
+
+  // Coal Mine
+  'Mine Entrance': '/images/mine_entrance.png',
+  'Squeaky Room': '/images/squeaky_room.png',
+  'Bat Room': '/images/bat_room.png',
+  'Shaft Room': '/images/shaft_room.png',
 
   // Mirror
   'Mirror Room': '/images/mirror_room.png',
